@@ -111,7 +111,7 @@ class Neo4JStorage(BaseGraphStorage):
         async with self._driver.session() as session:
             query = f"""
                 MATCH (n:`{entity_name_label}`)
-                RETURN COUNT{{ (n)--() }} AS totalEdgeCount
+                RETURN SIZE((n)--()) AS totalEdgeCount
             """
             result = await session.run(query)
             record = await result.single()
@@ -232,7 +232,7 @@ class Neo4JStorage(BaseGraphStorage):
 
         async def _do_upsert(tx: AsyncManagedTransaction):
             query = f"""
-            MERGE (n:`{label}`)
+            CREATE (n:`{label}`)
             SET n += $properties
             """
             await tx.run(query, properties=properties)
